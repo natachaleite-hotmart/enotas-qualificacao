@@ -348,7 +348,17 @@
                 <div class="result-screen">
                     <div class="result-icon success">✅</div>
                     <h2>Tudo certo! O eNotas é pra você.</h2>
-                    <p>Seu perfil é compatível com o eNotas. Você será redirecionado para o checkout do seu plano.</p>
+                    <p>Antes de ir para o checkout, atenção a esses pontos importantes:</p>
+                </div>
+                <div style="background: #FFF7ED; border: 1px solid #FDBA74; border-radius: 12px; padding: 1.25rem; margin: 0 0 1.5rem; text-align: left;">
+                    <div style="font-weight: 600; color: #9A3412; margin-bottom: 0.75rem; font-size: 0.95rem;">⚠️ Atenção ao preencher o checkout</div>
+                    <ul style="color: #78350F; font-size: 0.875rem; line-height: 1.7; padding-left: 1.25rem; margin: 0;">
+                        <li>Use o <strong>mesmo e-mail</strong> da sua conta Hotmart para realizar a compra.</li>
+                        <li>Preencha os dados de cobrança com as <strong>informações que devem constar na nota fiscal</strong> (razão social, CNPJ e endereço da empresa).</li>
+                        <li>Dados incorretos podem levar ao <strong>cancelamento da assinatura</strong>, exigindo uma nova compra.</li>
+                    </ul>
+                </div>
+                <div style="text-align: center;">
                     <a id="checkout-link" href="#" class="btn-checkout">Ir para o checkout →</a>
                 </div>
             </div>
@@ -551,9 +561,6 @@
             document.getElementById('checkout-link').href = checkoutURL;
 
             showStep('approved');
-
-            // Redireciona automaticamente após 3 segundos
-            setTimeout(() => { window.location.href = checkoutURL; }, 3000);
         });
 
         document.getElementById('back-2').addEventListener('click', () => { currentStep = 1; showStep(1); });
