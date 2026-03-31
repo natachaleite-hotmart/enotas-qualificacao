@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eNotas — Verificação de Perfil</title>
+    <style>
+        :root {
+            --enotas-purple: #6C2BD9;
+            --enotas-purple-dark: #5521B5;
+            --enotas-purple-light: #EDE9FE;
+            --enotas-green: #10B981;
+            --enotas-red: #EF4444;
+            --enotas-gray-50: #F9FAFB;
+            --enotas-gray-100: #F3F4F6;
+            --enotas-gray-200: #E5E7EB;
+            --enotas-gray-500: #6B7280;
+            --enotas-gray-700: #374151;
+            --enotas-gray-900: #111827;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--enotas-gray-50);
+            color: var(--enotas-gray-900);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            width: 100%;
+            background: #fff;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: center;
+            border-bottom: 1px solid var(--enotas-gray-200);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--enotas-purple);
+            letter-spacing: -0.5px;
+        }
+        .logo span { color: var(--enotas-gray-700); }
+
+        main {
+            width: 100%;
+            max-width: 640px;
+            padding: 2rem 1.5rem;
+            flex: 1;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .hero h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--enotas-gray-900);
+        }
+        .hero p {
+            color: var(--enotas-gray-500);
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        /* Progress bar */
+        .progress-bar {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+        .progress-step {
+            flex: 1;
+            height: 4px;
+            border-radius: 2px;
+            background: var(--enotas-gray-200);
+            transition: background 0.3s;
+        }
+        .progress-step.active { background: var(--enotas-purple); }
+
+        /* Card */
+        .card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04);
+        }
+
+        .question-label {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+        }
+
+        /* Options */
+        .options { display: flex; flex-direction: column; gap: 0.75rem; }
+
+        .option {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 1.25rem;
+            border: 2px solid var(--enotas-gray-200);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+        .option:hover { border-color: var(--enotas-purple); background: var(--enotas-purple-light); }
+        .option.selected { border-color: var(--enotas-purple); background: var(--enotas-purple-light); }
+
+        .option input[type="radio"] { display: none; }
+
+        .radio-circle {
+            width: 20px; height: 20px;
+            border: 2px solid var(--enotas-gray-200);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+        .option.selected .radio-circle {
+            border-color: var(--enotas-purple);
+        }
+        .option.selected .radio-circle::after {
+            content: '';
+            width: 10px; height: 10px;
+            background: var(--enotas-purple);
+            border-radius: 50%;
+        }
+
+        /* CNPJ input */
+        .cnpj-group { margin-top: 0.5rem; }
+        .cnpj-group label {
+            display: block;
+            font-size: 0.875rem;
+            color: var(--enotas-gray-500);
+            margin-bottom: 0.5rem;
+        }
+        .cnpj-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid var(--enotas-gray-200);
+            border-radius: 12px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .cnpj-input:focus { border-color: var(--enotas-purple); }
+        .cnpj-input.error { border-color: var(--enotas-red); }
+        .cnpj-hint {
+            font-size: 0.8rem;
+            color: var(--enotas-gray-500);
+            margin-top: 0.35rem;
+        }
+        .cnpj-hint.error { color: var(--enotas-red); }
+
+        /* Buttons */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1.5rem;
+        }
+        .btn {
+            padding: 0.75rem 1.75rem;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+        .btn-back {
+            background: transparent;
+            color: var(--enotas-gray-500);
+        }
+        .btn-back:hover { color: var(--enotas-gray-700); }
+        .btn-next {
+            background: var(--enotas-purple);
+            color: #fff;
+        }
+        .btn-next:hover { background: var(--enotas-purple-dark); }
+        .btn-next:disabled {
+            background: var(--enotas-gray-200);
+            color: var(--enotas-gray-500);
+            cursor: not-allowed;
+        }
+
+        /* Result screens */
+        .result-screen { text-align: center; padding: 2rem 1rem; }
+        .result-icon {
+            width: 72px; height: 72px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 1.25rem;
+            font-size: 2rem;
+        }
+        .result-icon.success { background: #D1FAE5; }
+        .result-icon.blocked { background: #FEE2E2; }
+        .result-screen h2 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+        .result-screen p {
+            color: var(--enotas-gray-500);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+        .btn-checkout {
+            display: inline-block;
+            background: var(--enotas-purple);
+            color: #fff;
+            padding: 1rem 2.5rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+        .btn-checkout:hover { background: var(--enotas-purple-dark); }
+        .btn-contact {
+            display: inline-block;
+            background: var(--enotas-gray-100);
+            color: var(--enotas-gray-700);
+            padding: 0.875rem 2rem;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+        .btn-contact:hover { background: var(--enotas-gray-200); }
+
+        .step { display: none; }
+        .step.active { display: block; }
+
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            color: var(--enotas-gray-500);
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">e<span>Notas</span></div>
+    </header>
+
+    <main>
+        <div class="hero">
+            <h1>Antes de começar, queremos te conhecer melhor 😊</h1>
+            <p>Responda algumas perguntas rápidas para garantir que o eNotas é a solução ideal pra você.</p>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-step active" id="prog-1"></div>
+            <div class="progress-step" id="prog-2"></div>
+            <div class="progress-step" id="prog-3"></div>
+        </div>
+
+        <div class="card">
+            <!-- Step 1: Tipo de produto -->
+            <div class="step active" id="step-1">
+                <div class="question-label">Você vende produtos digitais?</div>
+                <div class="options" id="options-1">
+                    <label class="option" data-value="sim_digital">
+                        <input type="radio" name="q1" value="sim_digital">
+                        <span class="radio-circle"></span>
+                        Sim, vendo cursos, e-books, mentorias ou comunidades
+                    </label>
+                    <label class="option" data-value="sim_misto">
+                        <input type="radio" name="q1" value="sim_misto">
+                        <span class="radio-circle"></span>
+                        Sim, vendo produtos digitais e também físicos
+                    </label>
+                    <label class="option" data-value="nao">
+                        <input type="radio" name="q1" value="nao">
+                        <span class="radio-circle"></span>
+                        Não, vendo apenas produtos físicos ou serviços tradicionais
+                    </label>
+                </div>
+                <div class="nav-buttons">
+                    <div></div>
+                    <button class="btn btn-next" id="next-1" disabled>Continuar</button>
+                </div>
+            </div>
+
+            <!-- Step 2: Plataforma -->
+            <div class="step" id="step-2">
+                <div class="question-label">Em qual plataforma você vende?</div>
+                <div class="options" id="options-2">
+                    <label class="option" data-value="hotmart">
+                        <input type="radio" name="q2" value="hotmart">
+                        <span class="radio-circle"></span>
+                        Hotmart
+                    </label>
+                    <label class="option" data-value="eduzz">
+                        <input type="radio" name="q2" value="eduzz">
+                        <span class="radio-circle"></span>
+                        Eduzz
+                    </label>
+                    <label class="option" data-value="kiwify">
+                        <input type="radio" name="q2" value="kiwify">
+                        <span class="radio-circle"></span>
+                        Kiwify
+                    </label>
+                    <label class="option" data-value="monetizze">
+                        <input type="radio" name="q2" value="monetizze">
+                        <span class="radio-circle"></span>
+                        Monetizze
+                    </label>
+                    <label class="option" data-value="outra">
+                        <input type="radio" name="q2" value="outra">
+                        <span class="radio-circle"></span>
+                        Outra plataforma digital
+                    </label>
+                    <label class="option" data-value="nenhuma">
+                        <input type="radio" name="q2" value="nenhuma">
+                        <span class="radio-circle"></span>
+                        Não vendo em nenhuma plataforma digital
+                    </label>
+                </div>
+                <div class="nav-buttons">
+                    <button class="btn btn-back" id="back-2">Voltar</button>
+                    <button class="btn btn-next" id="next-2" disabled>Continuar</button>
+                </div>
+            </div>
+
+            <!-- Step 3: CNPJ -->
+            <div class="step" id="step-3">
+                <div class="question-label">Qual o CNPJ da sua empresa?</div>
+                <div class="cnpj-group">
+                    <label for="cnpj">Precisamos do CNPJ para verificar a compatibilidade</label>
+                    <input type="text" class="cnpj-input" id="cnpj" placeholder="00.000.000/0000-00" maxlength="18" autocomplete="off">
+                    <div class="cnpj-hint" id="cnpj-hint">O eNotas funciona apenas para Pessoa Jurídica (PJ) com domicílio fiscal no Brasil.</div>
+                </div>
+                <div class="options" style="margin-top: 1rem;">
+                    <label class="option" data-value="sem_cnpj" id="sem-cnpj-option">
+                        <input type="radio" name="q3_alt" value="sem_cnpj">
+                        <span class="radio-circle"></span>
+                        Ainda não tenho CNPJ, estou abrindo
+                    </label>
+                </div>
+                <div class="nav-buttons">
+                    <button class="btn btn-back" id="back-3">Voltar</button>
+                    <button class="btn btn-next" id="next-3" disabled>Verificar</button>
+                </div>
+            </div>
+
+            <!-- Result: Approved -->
+            <div class="step" id="step-approved">
+                <div class="result-screen">
+                    <div class="result-icon success">✅</div>
+                    <h2>Tudo certo! O eNotas é pra você.</h2>
+                    <p>Seu perfil é compatível com o eNotas. Agora é só escolher o plano ideal e começar a emitir suas notas fiscais automaticamente.</p>
+                    <a href="https://enotas.com.br/#planos" class="btn-checkout">Escolher meu plano →</a>
+                </div>
+            </div>
+
+            <!-- Result: Blocked (não é infoprodutor) -->
+            <div class="step" id="step-blocked-perfil">
+                <div class="result-screen">
+                    <div class="result-icon blocked">😕</div>
+                    <h2>O eNotas pode não ser ideal pra você</h2>
+                    <p>O eNotas é focado em infoprodutores que vendem produtos digitais em plataformas como Hotmart, Eduzz, Kiwify e outras. Se você acredita que houve um engano ou quer saber mais, fale com a gente.</p>
+                    <a href="https://atendimento.enotas.com.br/hc/pt-br" class="btn-contact">Falar com o suporte</a>
+                </div>
+            </div>
+
+            <!-- Result: Blocked (sem plataforma) -->
+            <div class="step" id="step-blocked-plataforma">
+                <div class="result-screen">
+                    <div class="result-icon blocked">🤔</div>
+                    <h2>Você ainda não vende em uma plataforma digital</h2>
+                    <p>O eNotas funciona integrado a plataformas de venda de produtos digitais. Quando você começar a vender em uma delas, volte aqui que a gente cuida das suas notas fiscais!</p>
+                    <a href="https://enotas.com.br" class="btn-contact">Voltar ao site</a>
+                </div>
+            </div>
+
+            <!-- Result: Sem CNPJ -->
+            <div class="step" id="step-sem-cnpj">
+                <div class="result-screen">
+                    <div class="result-icon blocked">📋</div>
+                    <h2>Você vai precisar de um CNPJ</h2>
+                    <p>O eNotas emite notas fiscais para Pessoa Jurídica (PJ). Assim que abrir seu CNPJ, volte aqui e comece a emitir suas notas automaticamente. Se precisar de ajuda, fale com a gente.</p>
+                    <a href="https://atendimento.enotas.com.br/hc/pt-br" class="btn-contact">Falar com o suporte</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        eNotas — Feito com ❤️ em Belo Horizonte, desde 2011.
+    </footer>
+
+    <script>
+        // State
+        let currentStep = 1;
+        const answers = { q1: null, q2: null, q3: null };
+
+        // Elements
+        const steps = {
+            1: document.getElementById('step-1'),
+            2: document.getElementById('step-2'),
+            3: document.getElementById('step-3'),
+            approved: document.getElementById('step-approved'),
+            blockedPerfil: document.getElementById('step-blocked-perfil'),
+            blockedPlataforma: document.getElementById('step-blocked-plataforma'),
+            semCnpj: document.getElementById('step-sem-cnpj'),
+        };
+
+        // Option selection logic
+        document.querySelectorAll('.options').forEach(group => {
+            group.querySelectorAll('.option').forEach(option => {
+                option.addEventListener('click', () => {
+                    group.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+                    option.classList.add('selected');
+                    option.querySelector('input').checked = true;
+
+                    const stepNum = option.closest('.step').id.replace('step-', '');
+                    const val = option.dataset.value;
+
+                    if (stepNum === '1') { answers.q1 = val; document.getElementById('next-1').disabled = false; }
+                    if (stepNum === '2') { answers.q2 = val; document.getElementById('next-2').disabled = false; }
+                    if (stepNum === '3') {
+                        answers.q3 = 'sem_cnpj';
+                        document.getElementById('cnpj').value = '';
+                        document.getElementById('next-3').disabled = false;
+                    }
+                });
+            });
+        });
+
+        // CNPJ mask
+        const cnpjInput = document.getElementById('cnpj');
+        cnpjInput.addEventListener('input', () => {
+            let v = cnpjInput.value.replace(/\D/g, '');
+            if (v.length > 14) v = v.slice(0, 14);
+            if (v.length > 12) v = v.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{1,2})/, '$1.$2.$3/$4-$5');
+            else if (v.length > 8) v = v.replace(/^(\d{2})(\d{3})(\d{3})(\d{1,4})/, '$1.$2.$3/$4');
+            else if (v.length > 5) v = v.replace(/^(\d{2})(\d{3})(\d{1,3})/, '$1.$2.$3');
+            else if (v.length > 2) v = v.replace(/^(\d{2})(\d{1,3})/, '$1.$2');
+            cnpjInput.value = v;
+
+            // Deselect "sem cnpj" option if typing
+            const semCnpjOpt = document.getElementById('sem-cnpj-option');
+            if (v.length > 0) {
+                semCnpjOpt.classList.remove('selected');
+                semCnpjOpt.querySelector('input').checked = false;
+                answers.q3 = null;
+            }
+
+            const raw = v.replace(/\D/g, '');
+            document.getElementById('next-3').disabled = raw.length < 14 && answers.q3 !== 'sem_cnpj';
+            if (raw.length === 14) {
+                answers.q3 = raw;
+                document.getElementById('next-3').disabled = false;
+            }
+        });
+
+        // CNPJ validation (basic check)
+        function isValidCNPJ(cnpj) {
+            cnpj = cnpj.replace(/\D/g, '');
+            if (cnpj.length !== 14) return false;
+            if (/^(\d)\1+$/.test(cnpj)) return false;
+
+            let size = cnpj.length - 2;
+            let numbers = cnpj.substring(0, size);
+            let digits = cnpj.substring(size);
+            let sum = 0, pos = size - 7;
+
+            for (let i = size; i >= 1; i--) {
+                sum += numbers.charAt(size - i) * pos--;
+                if (pos < 2) pos = 9;
+            }
+            let result = sum % 11 < 2 ? 0 : 11 - sum % 11;
+            if (result != digits.charAt(0)) return false;
+
+            size++;
+            numbers = cnpj.substring(0, size);
+            sum = 0;
+            pos = size - 7;
+            for (let i = size; i >= 1; i--) {
+                sum += numbers.charAt(size - i) * pos--;
+                if (pos < 2) pos = 9;
+            }
+            result = sum % 11 < 2 ? 0 : 11 - sum % 11;
+            return result == digits.charAt(1);
+        }
+
+        // Navigation
+        function showStep(stepId) {
+            Object.values(steps).forEach(s => s.classList.remove('active'));
+            if (steps[stepId]) steps[stepId].classList.add('active');
+
+            // Update progress
+            for (let i = 1; i <= 3; i++) {
+                const prog = document.getElementById(`prog-${i}`);
+                prog.classList.toggle('active', typeof stepId === 'number' ? i <= stepId : true);
+            }
+        }
+
+        document.getElementById('next-1').addEventListener('click', () => {
+            if (answers.q1 === 'nao') {
+                showStep('blockedPerfil');
+            } else {
+                currentStep = 2;
+                showStep(2);
+            }
+        });
+
+        document.getElementById('next-2').addEventListener('click', () => {
+            if (answers.q2 === 'nenhuma') {
+                showStep('blockedPlataforma');
+            } else {
+                currentStep = 3;
+                showStep(3);
+            }
+        });
+
+        document.getElementById('next-3').addEventListener('click', () => {
+            if (answers.q3 === 'sem_cnpj') {
+                showStep('semCnpj');
+                return;
+            }
+
+            const raw = cnpjInput.value.replace(/\D/g, '');
+            if (!isValidCNPJ(raw)) {
+                cnpjInput.classList.add('error');
+                const hint = document.getElementById('cnpj-hint');
+                hint.textContent = 'CNPJ inválido. Verifique o número e tente novamente.';
+                hint.classList.add('error');
+                return;
+            }
+
+            cnpjInput.classList.remove('error');
+            document.getElementById('cnpj-hint').classList.remove('error');
+            document.getElementById('cnpj-hint').textContent = '';
+
+            showStep('approved');
+        });
+
+        document.getElementById('back-2').addEventListener('click', () => { currentStep = 1; showStep(1); });
+        document.getElementById('back-3').addEventListener('click', () => { currentStep = 2; showStep(2); });
+    </script>
+</body>
+</html>
