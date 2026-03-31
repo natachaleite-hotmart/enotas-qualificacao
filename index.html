@@ -254,7 +254,7 @@
 <body>
 
     <header>
-        <div class="logo">e<span>Notas</span></div>
+        <img src="https://enotas.com.br/wp-content/themes/enotas-4.3/ativos/img/logos/enotas.png?v=2" alt="eNotas" style="height: 32px;">
     </header>
 
     <main>
@@ -272,22 +272,22 @@
         <div class="card">
             <!-- Step 1: Tipo de produto -->
             <div class="step active" id="step-1">
-                <div class="question-label">Você vende produtos digitais?</div>
+                <div class="question-label">Para qual tipo de produto você precisa emitir notas fiscais?</div>
                 <div class="options" id="options-1">
                     <label class="option" data-value="sim_digital">
                         <input type="radio" name="q1" value="sim_digital">
                         <span class="radio-circle"></span>
-                        Sim, vendo cursos, e-books, mentorias ou comunidades
+                        Produtos digitais (e-book, mentorias e comunidade)
                     </label>
                     <label class="option" data-value="sim_misto">
                         <input type="radio" name="q1" value="sim_misto">
                         <span class="radio-circle"></span>
-                        Sim, vendo produtos digitais e também físicos
+                        Produtos físicos pela Hotmart
                     </label>
                     <label class="option" data-value="nao">
                         <input type="radio" name="q1" value="nao">
                         <span class="radio-circle"></span>
-                        Não, vendo apenas produtos físicos ou serviços tradicionais
+                        Outros — nenhuma das opções acima
                     </label>
                 </div>
                 <div class="nav-buttons">
@@ -305,25 +305,10 @@
                         <span class="radio-circle"></span>
                         Hotmart
                     </label>
-                    <label class="option" data-value="eduzz">
-                        <input type="radio" name="q2" value="eduzz">
-                        <span class="radio-circle"></span>
-                        Eduzz
-                    </label>
-                    <label class="option" data-value="kiwify">
-                        <input type="radio" name="q2" value="kiwify">
-                        <span class="radio-circle"></span>
-                        Kiwify
-                    </label>
-                    <label class="option" data-value="monetizze">
-                        <input type="radio" name="q2" value="monetizze">
-                        <span class="radio-circle"></span>
-                        Monetizze
-                    </label>
                     <label class="option" data-value="outra">
                         <input type="radio" name="q2" value="outra">
                         <span class="radio-circle"></span>
-                        Outra plataforma digital
+                        Outra plataforma
                     </label>
                     <label class="option" data-value="nenhuma">
                         <input type="radio" name="q2" value="nenhuma">
@@ -363,8 +348,8 @@
                 <div class="result-screen">
                     <div class="result-icon success">✅</div>
                     <h2>Tudo certo! O eNotas é pra você.</h2>
-                    <p>Seu perfil é compatível com o eNotas. Agora é só escolher o plano ideal e começar a emitir suas notas fiscais automaticamente.</p>
-                    <a href="https://enotas.com.br/#planos" class="btn-checkout">Escolher meu plano →</a>
+                    <p>Seu perfil é compatível com o eNotas. Você será redirecionado para o checkout do seu plano.</p>
+                    <a id="checkout-link" href="#" class="btn-checkout">Ir para o checkout →</a>
                 </div>
             </div>
 
@@ -373,8 +358,8 @@
                 <div class="result-screen">
                     <div class="result-icon blocked">😕</div>
                     <h2>O eNotas pode não ser ideal pra você</h2>
-                    <p>O eNotas é focado em infoprodutores que vendem produtos digitais em plataformas como Hotmart, Eduzz, Kiwify e outras. Se você acredita que houve um engano ou quer saber mais, fale com a gente.</p>
-                    <a href="https://atendimento.enotas.com.br/hc/pt-br" class="btn-contact">Falar com o suporte</a>
+                    <p>O eNotas é focado em infoprodutores que vendem produtos digitais em plataformas como Hotmart, Eduzz, Kiwify e outras.</p>
+                    <a href="https://enotas.com.br" class="btn-contact">Voltar ao site</a>
                 </div>
             </div>
 
@@ -393,8 +378,8 @@
                 <div class="result-screen">
                     <div class="result-icon blocked">📋</div>
                     <h2>Você vai precisar de um CNPJ</h2>
-                    <p>O eNotas emite notas fiscais para Pessoa Jurídica (PJ). Assim que abrir seu CNPJ, volte aqui e comece a emitir suas notas automaticamente. Se precisar de ajuda, fale com a gente.</p>
-                    <a href="https://atendimento.enotas.com.br/hc/pt-br" class="btn-contact">Falar com o suporte</a>
+                    <p>O eNotas emite notas fiscais para Pessoa Jurídica (PJ). Assim que abrir seu CNPJ, volte aqui e comece a emitir suas notas automaticamente.</p>
+                    <a href="https://enotas.com.br" class="btn-contact">Voltar ao site</a>
                 </div>
             </div>
         </div>
@@ -405,6 +390,19 @@
     </footer>
 
     <script>
+        // Checkout URLs por plano (anual)
+        const checkoutURLs = {
+            basic:      'https://pay.hotmart.com/R3365539Y?off=a4xvylrr&checkoutMode=10&sck=site-enotas--none',
+            plus:       'https://pay.hotmart.com/R3365539Y?off=PLUS_OFFER_ID&checkoutMode=10&sck=site-enotas--none',
+            pro:        'https://pay.hotmart.com/R3365539Y?off=PRO_OFFER_ID&checkoutMode=10&sck=site-enotas--none',
+            business:   'https://pay.hotmart.com/R3365539Y?off=BUSINESS_OFFER_ID&checkoutMode=10&sck=site-enotas--none',
+            enterprise: 'https://pay.hotmart.com/R3365539Y?off=ENTERPRISE_OFFER_ID&checkoutMode=10&sck=site-enotas--none',
+        };
+
+        // Pega o plano da URL (?plano=basic)
+        const urlParams = new URLSearchParams(window.location.search);
+        const planoEscolhido = urlParams.get('plano') || 'basic';
+
         // State
         let currentStep = 1;
         const answers = { q1: null, q2: null, q3: null };
@@ -548,7 +546,14 @@
             document.getElementById('cnpj-hint').classList.remove('error');
             document.getElementById('cnpj-hint').textContent = '';
 
+            // Seta o link do checkout com o plano escolhido
+            const checkoutURL = checkoutURLs[planoEscolhido] || checkoutURLs.basic;
+            document.getElementById('checkout-link').href = checkoutURL;
+
             showStep('approved');
+
+            // Redireciona automaticamente após 3 segundos
+            setTimeout(() => { window.location.href = checkoutURL; }, 3000);
         });
 
         document.getElementById('back-2').addEventListener('click', () => { currentStep = 1; showStep(1); });
